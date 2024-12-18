@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support System</title>
+  <style>
+    /* Styling for the whole page */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+
+    header {
+      background-color: #007bff;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    main {
+      margin: 20px auto;
+      max-width: 800px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    form textarea {
+      grid-column: 1 / -1; /* Span full width */
+    }
+
+    form button {
+      grid-column: 1 / -1; /* Span full width */
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    form button:hover {
+      background-color: #0056b3;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background: #f4f4f4;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      padding: 15px;
+    }
+
+    .case-header {
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .case-details {
+      margin: 5px 0;
+    }
+
+    footer {
+      text-align: center;
+      margin: 20px 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Support System</h1>
+  </header>
+  <main>
+    <!-- Form for creating support cases -->
+    <form id="supportForm">
+      <input type="text" id="customerId" placeholder="Kunde ID" required />
+      <input type="text" id="customerName" placeholder="Kunde Navn" required />
+      <input type="email" id="customerEmail" placeholder="Kunde E-mail" required />
+      <input type="tel" id="customerPhone" placeholder="Telefonnummer" required />
+      <input type="text" id="title" placeholder="Sag Titel" required />
+      <textarea id="description" placeholder="Beskrivelse" rows="4" required></textarea>
+      <button type="submit">Opret Sag</button>
+    </form>
+
+    <h2>Support-sager</h2>
+    <ul id="caseList"></ul>
+  </main>
+  <footer>
+    &copy; 2024 Support System
+  </footer>
+
+  <script>
+    // Helper functions for localStorage
+    const getCases = () => JSON.parse(localStorage.getItem('cases')) || [];
+    const saveCases = (cases) => localStorage.setItem('cases', JSON.stringify(cases));
+
+    // Function to render cases in the list
+    const renderCases = () => {
+      const caseList = document.getElementById('caseList');
+      caseList.innerHTML = '';
+      const cases = getCases();
+
+      cases.forEach((c, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div class="case-header">#${index + 1} - ${c.title}</div>
+          <div class="case-details"><strong>Kunde ID:</strong> ${c.customerId}</div>
+          <div class="case-details"><strong>Navn:</strong> ${c.customerName}</div>
+          <div class="case-details"><strong>E-mail:</strong> ${c.customerEmail}</div>
+          <div class="case-details"><strong>Telefon:</strong> ${c.customerPhone}</div>
+          <div class="case-details"><strong>Beskrivelse:</strong> ${c.description}</div>
+        `;
+        caseList.appendChild(li);
+      });
+    };
+
+    // Add new case
+    document.getElementById('supportForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Get form values
+      const customerId = document.getElementById('customerId').value;
+      const customerName = document.getElementById('customerName').value;
+      const customerEmail = document.getElementById('customerEmail').value;
+      const customerPhone = document.getElementById('customerPhone').value;
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+
+      // Get existing cases, add new case, and save
+      const cases = getCases();
+      cases.push({ customerId, customerName, customerEmail, customerPhone, title, description });
+      saveCases(cases);
+
+      renderCases(); // Update case list
+      e.target.reset(); // Reset form
+    });
+
+    // Render cases on page load
+    renderCases();
+  </script>
+</body>
+</html>
