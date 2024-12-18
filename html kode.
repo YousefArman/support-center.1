@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support System</title>
+  <style>
+    /* Tilføj CSS til layout */
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    form { margin-bottom: 20px; }
+    ul { list-style-type: none; padding: 0; }
+    li { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <h1>Support System</h1>
+
+  <!-- Formular til oprettelse af sager -->
+  <form id="supportForm">
+    <input type="text" id="title" placeholder="Sag titel" required />
+    <textarea id="description" placeholder="Beskrivelse" required></textarea>
+    <button type="submit">Opret Sag</button>
+  </form>
+
+  <h2>Liste over Sager</h2>
+  <ul id="caseList"></ul>
+
+  <script>
+    // Hent sager fra localStorage
+    const getCases = () => JSON.parse(localStorage.getItem('cases')) || [];
+
+    // Gem sager i localStorage
+    const saveCases = (cases) => localStorage.setItem('cases', JSON.stringify(cases));
+
+    // Vis sager i UI
+    const renderCases = () => {
+      const caseList = document.getElementById('caseList');
+      caseList.innerHTML = '';
+      const cases = getCases();
+      cases.forEach((c, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${c.title}: ${c.description}`;
+        caseList.appendChild(li);
+      });
+    };
+
+    // Håndter formularindsendelse
+    document.getElementById('supportForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+
+      const cases = getCases();
+      cases.push({ title, description });
+      saveCases(cases);
+
+      renderCases();
+
+      // Ryd formular
+      e.target.reset();
+    });
+
+    // Initial visning af sager
+    renderCases();
+  </script>
+</body>
+</html>
